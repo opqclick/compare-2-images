@@ -1,3 +1,5 @@
+/opt/render/project/src/.venv/bin/python -m pip install --upgrade pi
+
 pip install fastapi
 pip install "uvicorn[standard]"
 pip install face-recognition
