@@ -1,1 +1,4 @@
+fastapi
+uvicorn
+face-recognition
 gunicorn==19.7.1
