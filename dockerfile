@@ -1,12 +1,17 @@
-FROM python:3.10
+# 
+FROM python:3.11
 
-WORKDIR /src
+# 
+WORKDIR /code
 
-ADD ./ /src
+# 
+COPY ./requirements.txt /code/requirements.txt
 
-RUN pip install --upgrade pip
-RUN pip install --no-cache-dir -r requirements.txt
+# 
+RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 
-EXPOSE 8000 
+# 
+COPY ./app /code/app
 
-CMD ["python", "main.py"]
+# 
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80"]
