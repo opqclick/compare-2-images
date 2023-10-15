@@ -1,0 +1,9 @@
+version: "3"
+
+services:
+  fastapi:
+    image: image-fastapi
+    build: .
+    container_name: compare-2-images
+    ports:
+      - "8000:8000"
