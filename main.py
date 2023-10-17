@@ -1,10 +1,26 @@
 from fastapi import FastAPI, Form
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
+from fastapi.middleware.cors import CORSMiddleware  # Import CORSMiddleware
 import face_recognition
 import requests
 
 app = FastAPI()
+
+# Define your CORS settings
+origins = [
+    "http://127.0.0.1:8000",  # Replace with your development server URL
+    "http://192.81.219.48",
+]
+
+# Add CORS middleware with the defined settings
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 def find_face_encodings(image_url):
     # Download the image from the URL
