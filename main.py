@@ -1,37 +1,33 @@
 from fastapi import FastAPI, Form
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
-from fastapi.middleware.cors import CORSMiddleware
 import face_recognition
-import requests
 from PIL import Image
 import numpy as np
 from io import BytesIO
+import boto3
+from aws_credentials import AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_DEFAULT_REGION  # Import your credentials
 
 app = FastAPI()
 
-# Define your CORS settings
-origins = [
-    "http://127.0.0.1:8000",  # Replace with your development server URL
-    "http://192.81.219.48",
-]
+S3_BUCKET_NAME = 'gwap-development-storage'
+S3_FOLDER_NAME = 'development_verification_images'
 
-# Add CORS middleware with the defined settings
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+def find_face_encodings(image_name):
+    # Initialize the S3 client
+    s3 = boto3.client('s3', region_name=AWS_DEFAULT_REGION,
+                      aws_access_key_id=AWS_ACCESS_KEY_ID,
+                      aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
 
-def find_face_encodings(image_url):
-    # Download the image from the URL
-    response = requests.get(image_url)
-    response.raise_for_status()  # Check for any request errors
+    # Construct the S3 object URL
+    s3_object_url = f's3://{S3_BUCKET_NAME}/{S3_FOLDER_NAME}/{image_name}'
+
+    # Download the image from S3
+    s3_response = s3.get_object(Bucket=S3_BUCKET_NAME, Key=f'{S3_FOLDER_NAME}/{image_name}')
+    image_bytes = s3_response['Body'].read()
 
     # Open the downloaded image with Pillow (PIL)
-    image = Image.open(BytesIO(response.content))
+    image = Image.open(BytesIO(image_bytes))
 
     # Convert the Pillow image to a numpy array for face_recognition
     image_array = np.array(image)
@@ -44,24 +40,24 @@ def find_face_encodings(image_url):
 
     return face_enc[0]
 
-@app.post("/")
+@app.get("/")
 async def hello_world():
     return "Hello, World"
 
 @app.post("/compare")
 async def compare_images(
-    id_card_photo_url: str = Form(..., description="ID Card Photo URL"),
-    recent_camera_photo_url: str = Form(..., description="Recent Camera Photo URL"),
+    image_name_1: str = Form(..., description="Image Name 1"),
+    image_name_2: str = Form(..., description="Image Name 2"),
 ):
     try:
-        # Process the images from the provided URLs
-        id_card_face_encoding = find_face_encodings(id_card_photo_url)
-        recent_camera_face_encoding = find_face_encodings(recent_camera_photo_url)
+        # Process the images from the provided image names
+        image_1 = find_face_encodings(image_name_1)
+        image_2 = find_face_encodings(image_name_2)
 
-        is_same = face_recognition.compare_faces([id_card_face_encoding], recent_camera_face_encoding)[0]
+        is_same = face_recognition.compare_faces([image_1], image_2)[0]
 
         if is_same:
-            distance = face_recognition.face_distance([id_card_face_encoding], recent_camera_face_encoding)
+            distance = face_recognition.face_distance([image_1], image_2)
             distance = round(distance[0] * 100)
             accuracy = 100 - round(distance)
 
