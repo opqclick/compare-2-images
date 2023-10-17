@@ -23,6 +23,11 @@ def find_face_encodings(image_url):
     return image_array[0]
 
 @app.post("/")
+async def hello_world():
+    return "Hello, World"
+    
+
+@app.post("/compare")
 async def compare_images(
     id_card_photo_url: str = Form(..., description="ID Card Photo URL"),
     recent_camera_photo_url: str = Form(..., description="Recent Camera Photo URL"),
