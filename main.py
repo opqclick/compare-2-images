@@ -46,8 +46,8 @@ async def hello_world():
 
 @app.post("/compare")
 async def compare_images(
-    id_card_photo: str = Form(..., description="Image Name 1"),
-    recent_camera_photo: str = Form(..., description="Image Name 2"),
+    id_card_photo: str = Form(..., description="Id Card Photo.."),
+    recent_camera_photo: str = Form(..., description="Recent Camera Photo.."),
 ):
     try:
         # Process the images from the provided image names
