@@ -1,9 +1,12 @@
 from fastapi import FastAPI, Form
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
-from fastapi.middleware.cors import CORSMiddleware  # Import CORSMiddleware
+from fastapi.middleware.cors import CORSMiddleware
 import face_recognition
 import requests
+from PIL import Image
+import numpy as np
+from io import BytesIO
 
 app = FastAPI()
 
@@ -27,21 +30,23 @@ def find_face_encodings(image_url):
     response = requests.get(image_url)
     response.raise_for_status()  # Check for any request errors
 
-    # Convert the image content to bytes
-    image_bytes = response.content
+    # Open the downloaded image with Pillow (PIL)
+    image = Image.open(BytesIO(response.content))
 
-    # Process the image bytes
-    image_array = face_recognition.face_encodings(image_bytes)
+    # Convert the Pillow image to a numpy array for face_recognition
+    image_array = np.array(image)
 
-    if not image_array:
+    # Get face encodings from the image
+    face_enc = face_recognition.face_encodings(image_array)
+
+    if not face_enc:
         raise ValueError("No faces found in the provided image")
 
-    return image_array[0]
+    return face_enc[0]
 
 @app.post("/")
 async def hello_world():
     return "Hello, World"
-    
 
 @app.post("/compare")
 async def compare_images(
