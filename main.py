@@ -46,13 +46,13 @@ async def hello_world():
 
 @app.post("/compare")
 async def compare_images(
-    image_name_1: str = Form(..., description="Image Name 1"),
-    image_name_2: str = Form(..., description="Image Name 2"),
+    id_card_photo: str = Form(..., description="Image Name 1"),
+    recent_camera_photo: str = Form(..., description="Image Name 2"),
 ):
     try:
         # Process the images from the provided image names
-        image_1 = find_face_encodings(image_name_1)
-        image_2 = find_face_encodings(image_name_2)
+        image_1 = find_face_encodings(id_card_photo)
+        image_2 = find_face_encodings(recent_camera_photo)
 
         is_same = face_recognition.compare_faces([image_1], image_2)[0]
 
