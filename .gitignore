@@ -109,4 +109,3 @@ venv.bak/
 
 #IDE
 .idea
-aws_credentials.py
