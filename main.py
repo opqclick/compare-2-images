@@ -61,7 +61,12 @@ async def compare_images(
             distance = round(distance[0] * 100)
             accuracy = 100 - round(distance)
 
-            response = {"result": "The images are the same", "accuracy": accuracy, "id_card_photo": image_1, "recent_camera_photo": image_2}
+            response = {
+                "result": "The images are the same",
+                "accuracy": accuracy,
+                "id_card_photo": id_card_photo,  
+                "recent_camera_photo": recent_camera_photo, 
+            }
         else:
             response = {"result": "The images are not the same"}
 
