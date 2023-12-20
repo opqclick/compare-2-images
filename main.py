@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Form, HTTPException
+from fastapi import FastAPI, Form
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 import face_recognition
@@ -64,30 +64,13 @@ async def compare_images(
             response = {
                 "result": "The images are the same",
                 "accuracy": accuracy,
-                "id_card_photo": id_card_photo,
-                "recent_camera_photo": recent_camera_photo,
+                "id_card_photo": id_card_photo,  
+                "recent_camera_photo": recent_camera_photo, 
             }
         else:
             response = {"result": "The images are not the same"}
 
         return JSONResponse(content=jsonable_encoder(response))
     except Exception as e:
-        # Handle the exception
         error_message = {"error": str(e)}
         return JSONResponse(content=jsonable_encoder(error_message), status_code=400)
-    finally:
-        try:
-            # Delete the uploaded images from the S3 bucket if the status code is not 200
-            if response.get('status_code') != 200:
-                s3 = boto3.client('s3', region_name=AWS_DEFAULT_REGION,
-                                  aws_access_key_id=AWS_ACCESS_KEY_ID,
-                                  aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
-
-                # Delete the id_card_photo
-                s3.delete_object(Bucket=S3_BUCKET_NAME, Key=f'{S3_FOLDER_NAME}/{id_card_photo}')
-
-                # Delete the recent_camera_photo
-                s3.delete_object(Bucket=S3_BUCKET_NAME, Key=f'{S3_FOLDER_NAME}/{recent_camera_photo}')
-        except Exception as delete_exception:
-            # Log or handle the exception from the delete operation
-            print(f"Error deleting images from S3: {delete_exception}")
