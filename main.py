@@ -11,7 +11,7 @@ from aws_credentials import AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_DEFAUL
 app = FastAPI()
 
 S3_BUCKET_NAME = 'gwap-development-storage'
-S3_FOLDER_NAME = 'verification-images'
+S3_FOLDER_NAME = 'development_verification_images'
 
 def find_face_encodings(image_name):
     # Initialize the S3 client
@@ -77,16 +77,17 @@ async def compare_images(
         return JSONResponse(content=jsonable_encoder(error_message), status_code=400)
     finally:
         try:
-            # Delete the uploaded images from the S3 bucket
-            s3 = boto3.client('s3', region_name=AWS_DEFAULT_REGION,
-                              aws_access_key_id=AWS_ACCESS_KEY_ID,
-                              aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
+            # Delete the uploaded images from the S3 bucket if the status code is not 200
+            if response.get('status_code') != 200:
+                s3 = boto3.client('s3', region_name=AWS_DEFAULT_REGION,
+                                  aws_access_key_id=AWS_ACCESS_KEY_ID,
+                                  aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
 
-            # Delete the id_card_photo
-            s3.delete_object(Bucket=S3_BUCKET_NAME, Key=f'{S3_FOLDER_NAME}/{id_card_photo}')
+                # Delete the id_card_photo
+                s3.delete_object(Bucket=S3_BUCKET_NAME, Key=f'{S3_FOLDER_NAME}/{id_card_photo}')
 
-            # Delete the recent_camera_photo
-            s3.delete_object(Bucket=S3_BUCKET_NAME, Key=f'{S3_FOLDER_NAME}/{recent_camera_photo}')
+                # Delete the recent_camera_photo
+                s3.delete_object(Bucket=S3_BUCKET_NAME, Key=f'{S3_FOLDER_NAME}/{recent_camera_photo}')
         except Exception as delete_exception:
             # Log or handle the exception from the delete operation
             print(f"Error deleting images from S3: {delete_exception}")

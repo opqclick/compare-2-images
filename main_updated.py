@@ -11,7 +11,7 @@ from aws_credentials import AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_DEFAUL
 app = FastAPI()
 
 S3_BUCKET_NAME = 'gwap-development-storage'
-S3_FOLDER_NAME = 'verification-images'
+S3_FOLDER_NAME = 'development_verification_images'
 
 def find_face_encodings(image_name):
     # Initialize the S3 client
