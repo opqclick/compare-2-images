@@ -6,12 +6,10 @@ from PIL import Image
 import numpy as np
 from io import BytesIO
 import boto3
-from aws_credentials import AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_DEFAULT_REGION  # Import your credentials
+from aws_credentials import AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_DEFAULT_REGION, S3_BUCKET_NAME, S3_FOLDER_NAME # Import your credentials
 
 app = FastAPI()
 
-S3_BUCKET_NAME = 'gwap-development-storage'
-S3_FOLDER_NAME = 'development_verification_images'
 
 def find_face_encodings(image_name):
     # Initialize the S3 client

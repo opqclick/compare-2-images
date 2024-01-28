@@ -1,3 +1,5 @@
 AWS_ACCESS_KEY_ID = 'AKIA4LZXSMC7ACBFY4WK'
 AWS_SECRET_ACCESS_KEY = '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'
 AWS_DEFAULT_REGION = 'us-east-1'
+S3_BUCKET_NAME = 'gwap-development-storage'
+S3_FOLDER_NAME = 'development-verification-images'
