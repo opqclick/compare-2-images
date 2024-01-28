@@ -42,6 +42,7 @@ def find_face_encodings(image_name):
 
 @app.get("/")
 async def hello_world():
+    #return AWS_SECRET_ACCESS_KEY
     return "Hello, World"
 
 @app.post("/compare")
